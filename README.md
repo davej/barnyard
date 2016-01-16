@@ -7,6 +7,9 @@ Barnyard
 Bootstrap/Scaffold a project for use with [Piggy in the Middle](https://github.com/davej/piggy-in-the-middle) and [Baconize](https://github.com/davej/baconize).
 
 
+Getting Started
+---------------
+
 To install:
 ```sh
 npm install barnyard
