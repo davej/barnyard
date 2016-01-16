@@ -15,7 +15,7 @@ npm install barnyard
 To scaffold out a project using `html`, `scss`, `babel`, you could do:
 
 ```javascript
-var barnyard = require('baconize');
+var barnyard = require('barnyard');
 
 var scaffoldDir = '/path/to/dir';
 var options = {
