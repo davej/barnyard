@@ -3,6 +3,7 @@ Barnyard
 
 [![npm version](https://badge.fury.io/js/barnyard.svg)](https://badge.fury.io/js/barnyard)
 [![Build Status](https://travis-ci.org/davej/barnyard.svg?branch=master)](https://travis-ci.org/davej/barnyard)
+[![Coverage Status](https://img.shields.io/coveralls/davej/barnyard.svg)](https://coveralls.io/r/davej/barnyard?branch=master)
 
 Bootstrap/Scaffold a project for use with [Piggy in the Middle](https://github.com/davej/piggy-in-the-middle) and [Baconize](https://github.com/davej/baconize).
 
