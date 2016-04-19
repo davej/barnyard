@@ -23,9 +23,8 @@ var barnyard = require('barnyard');
 
 var scaffoldDir = '/path/to/dir';
 var options = {
-  html: 'html',
-  styles: 'scss',
-  scripts: 'babel',
+  styles: { type: 'scss' },
+  scripts: { type: 'babel' },
   whitespaceFormatting: 2,
   babelPolyfill: true,
   normalizeCss: true,
@@ -69,14 +68,54 @@ And here is a truncated version of the html file:
 Options
 -------
 
-- **html** (String, default = 'html'): Which languages to use for html documents. Possibilities: 'html', 'jade'.
+- **html**
 
-- **styles** (String, default = 'css'): Which languages to use for stylesheets. Possibilities: 'css', 'scss', 'sass', 'less', 'styl'.
+  - **type** (String, default = 'html'): Which languages to use for html documents. Possibilities: 'html', 'jade'.
 
-- **scripts** (String, default = 'js'): Which languages to use for javascript. Possibilities: 'js', 'babel', 'coffee'.
+  - **file** (String, default = 'index'): Filename (without extension) for main html document.
+
+- **styles**
+
+  - **type** (String, default = 'css'): Which languages to use for stylesheets. Possibilities: 'css', 'scss', 'sass', 'less', 'styl'.
+
+  - **file** (String, default = 'main'): Filename (without extension) for main style file.
+
+  - **folder** (String, default = 'styles'): folder where style files are stored.
+
+- **scripts**
+
+  - **type** (String, default = 'js'): Which languages to use for javascript. Possibilities: 'js', 'babel', 'coffee'.
+
+  - **file** (String, default = 'main'): Filename (without extension) for main script files.
+
+  - **folder** (String, default = 'styles'): folder where script files are stored.
 
 - **babelPolyfill** (Boolean): Include and reference the [babel polyfill](https://babeljs.io/docs/usage/polyfill/).
 
 - **normalizeCss** (Boolean): Include and reference [normalize.css](https://necolas.github.io/normalize.css/).
 
-- **whitespaceFormatting** (Number, default = 'tabs'): Formatting for whitespace. If not specified then tabs will be used, otherwise you can pass a number (e.g. 2, 4, 8) and the corresponding number of spaces will be used
+- **whitespaceFormatting** (Number/String, default = 'tabs'): Formatting for whitespace. If not specified then tabs will be used, otherwise you can pass a number (e.g. 2, 4, 8) and the corresponding number of spaces will be used
+
+Here is a full list of the defaults:
+
+```js
+{
+  html: {
+    file: 'index',
+    type: 'html', // or 'jade'
+  },
+  styles: {
+    folder: 'styles',
+    file: 'main',
+    type: 'css', // or 'scss', 'sass', 'less', 'styl'
+  },
+  scripts: {
+    folder: 'scripts',
+    file: 'main',
+    type: 'js', // or 'babel', 'coffee'
+  },
+  babelPolyfill: false,
+  normalizeCss: false,
+  whitespaceFormatting: 'tabs',
+}
+```

@@ -24,11 +24,7 @@ describe('barnyard', () => {
   describe('vanilla scaffold', () => {
     before(clearTmpDir);
     it('should complete successfully', () => {
-      var options = {
-        html: 'html',
-        styles: 'css',
-        scripts: 'js'
-      };
+      var options = {};
       var barn = barnyard(tmpDir, options);
 
       return barn.then((files) =>
@@ -80,9 +76,15 @@ describe('barnyard', () => {
     before(clearTmpDir);
     it('should complete successfully', () => {
       var options = {
-        html: 'jade',
-        styles: 'scss',
-        scripts: 'coffee'
+        html: {
+          type: 'jade'
+        },
+        styles: {
+          type: 'scss'
+        },
+        scripts: {
+          type: 'coffee'
+        }
       };
       var barn = barnyard(tmpDir, options);
 
@@ -136,10 +138,14 @@ describe('barnyard', () => {
       before(clearTmpDir);
       it('should complete successfully', () => {
         var options = {
-          html: 'html',
-          scripts: 'babel',
           babelPolyfill: true,
           normalizeCss: true,
+          html: {
+            type: 'html'
+          },
+          scripts: {
+            type: 'babel'
+          }
         };
         var barn = barnyard(tmpDir, options);
 
@@ -177,10 +183,14 @@ describe('barnyard', () => {
       before(clearTmpDir);
       it('should complete successfully', () => {
         var options = {
-          html: 'jade',
-          scripts: 'babel',
           babelPolyfill: true,
           normalizeCss: true,
+          html: {
+            type: 'jade'
+          },
+          scripts: {
+            type: 'babel'
+          }
         };
         var barn = barnyard(tmpDir, options);
 
@@ -215,6 +225,138 @@ describe('barnyard', () => {
     });
 
   });
+
+
+
+  describe('jade, scss & coffee scaffold', () => {
+    before(clearTmpDir);
+    it('should complete successfully', () => {
+      var options = {
+        styles: {
+          type: 'scss'
+        },
+        html: {
+          type: 'jade'
+        },
+        scripts: {
+          type: 'coffee'
+        }
+      };
+      var barn = barnyard(tmpDir, options);
+
+      return barn.then((files) =>
+        expect(makeRelative(files),
+          'to contain', 'index.jade', 'scripts/main.coffee', 'styles/main.scss')
+          .and('to have length', 3)
+      );
+    });
+
+    it('should contain correct files', () =>
+      walk(tmpDir).then((files) =>
+        expect(makeRelative(files),
+          'to contain', 'index.jade', 'scripts/main.coffee', 'styles/main.scss')
+          .and('to have length', 3)
+      )
+    );
+
+    describe('index.jade', () => {
+      var filePath = Path.join(tmpDir, 'index.jade');
+      var fileContents;
+      before(() =>
+        readFile(filePath, 'utf8').then(data => fileContents = data)
+      );
+
+      it('should reference scripts and styles', () =>
+        expect(fileContents, 'to contain', 'main.css', 'main.js')
+      );
+
+      it('should not reference babel polyfill or normalize', () =>
+        expect(fileContents, 'not to contain', 'polyfill.js', 'normalize.css')
+      );
+    });
+
+    describe('asset files', () => {
+      it('should have contents', () => {
+        var coffeePath = Path.join(scriptsDir, 'main.coffee');
+        var scssPath = Path.join(stylesDir, 'main.scss');
+        return Q.all([readFile(coffeePath, 'utf8'), readFile(scssPath, 'utf8')])
+          .then((files) =>
+            files.forEach(file => expect(file.length, 'to be greater than', 10))
+          );
+      });
+    });
+
+  });
+
+  describe('Rename output files', () => {
+    before(clearTmpDir);
+    it('should complete successfully', () => {
+      var options = {
+        babelPolyfill: true,
+        normalizeCss: true,
+        styles: {
+          type: 'scss',
+          folder: 'css',
+          file: 'styles'
+        },
+        html: {
+          type: 'jade',
+          file: '200'
+        },
+        scripts: {
+          type: 'coffee',
+          file: 'app',
+          folder: 'js'
+        }
+      };
+      var barn = barnyard(tmpDir, options);
+
+      return barn.then((files) =>
+        expect(makeRelative(files),
+          'to contain', '200.jade', 'js/app.coffee', 'css/styles.scss',
+          'js/polyfill.js', 'css/normalize.css')
+          .and('to have length', 5)
+      );
+    });
+
+    it('should contain correct files', () =>
+      walk(tmpDir).then((files) =>
+        expect(makeRelative(files),
+          'to contain', '200.jade', 'js/app.coffee', 'css/styles.scss',
+          'js/polyfill.js', 'css/normalize.css')
+          .and('to have length', 5)
+      )
+    );
+
+    describe('index.jade', () => {
+      var filePath = Path.join(tmpDir, '200.jade');
+      var fileContents;
+      before(() =>
+        readFile(filePath, 'utf8').then(data => fileContents = data)
+      );
+
+      it('should reference scripts and styles', () =>
+        expect(fileContents, 'to contain', 'css/styles.css', 'js/app.js')
+      );
+
+      it('should reference babel polyfill or normalize', () =>
+        expect(fileContents, 'to contain', 'js/polyfill.js', 'css/normalize.css')
+      );
+    });
+
+    describe('asset files', () => {
+      it('should have contents', () => {
+        var coffeePath = Path.join(Path.join(tmpDir, 'js'), 'app.coffee');
+        var scssPath = Path.join(Path.join(tmpDir, 'css'), 'styles.scss');
+        return Q.all([readFile(coffeePath, 'utf8'), readFile(scssPath, 'utf8')])
+          .then((files) =>
+            files.forEach(file => expect(file.length, 'to be greater than', 10))
+          );
+      });
+    });
+
+  });
+
 
   describe('whitespace', () => {
     describe('tabs', () => {
