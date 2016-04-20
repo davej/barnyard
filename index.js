@@ -14,7 +14,7 @@ var writeFile = Q.denodeify(fs.writeFile);
 var babelPolyfillPath = require.resolve('babel-polyfill/dist/polyfill.js');
 var normalizeCssPath = require.resolve('normalize.css/normalize.css');
 
-var templatesDir = 'templates';
+var templatesDir = join(__dirname, 'templates');
 
 var defaults = {
   html: {
@@ -108,8 +108,8 @@ module.exports = function barnyard(projectDir, options) {
       if (requiresTemplating) {
         data = mark.up(data, options);
       }
-      if (typeof options.whitespaceFormatting === 'number') {
-        data = detab(data, options.whitespaceFormatting);
+      if (typeof options.whitespaceFormatting === 'number' || !isNaN(options.whitespaceFormatting)) {
+        data = detab(data, parseInt(options.whitespaceFormatting, 10));
       }
       return {
         data: data,
@@ -175,7 +175,7 @@ module.exports = function barnyard(projectDir, options) {
 
   function outputFiles(files) {
     var outputFilesList = files.map(function(file) {
-      var filePath = projectDir + file.path;
+      var filePath = join(projectDir, file.path);
       return outputFile(filePath, file.data);
     });
     return Q.all(outputFilesList);
