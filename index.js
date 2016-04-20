@@ -11,6 +11,8 @@ var Q = require('q');
 var mkdirp = Q.denodeify(require('mkdirp'));
 var readFile = Q.denodeify(fs.readFile);
 var writeFile = Q.denodeify(fs.writeFile);
+var babelPolyfillPath = require.resolve('babel-polyfill/dist/polyfill.js');
+var normalizeCssPath = require.resolve('normalize.css/normalize.css');
 
 var templatesDir = 'templates';
 
@@ -70,8 +72,6 @@ var fileMap = {
       return join((dir || defaults.scripts.folder), (name || defaults.scripts.file) + '.ts')
     },
   },
-  babelPolyfill: 'babel-polyfill/dist/polyfill.js',
-  normalizeCss: 'normalize.css/normalize.css',
 };
 
 /**
@@ -118,8 +118,7 @@ module.exports = function barnyard(projectDir, options) {
     });
   }
 
-  function copyModuleFileAs(modulePath, outputPath) {
-    var filename = require.resolve(modulePath);
+  function getFile(filename, outputPath) {
     var inputFile = readFile(filename, 'utf8');
     return formatOutputObject(inputFile, outputPath);
   }
@@ -157,10 +156,10 @@ module.exports = function barnyard(projectDir, options) {
     files.push(prepareStyles());
     files.push(prepareScripts());
     if (options.babelPolyfill) {
-      files.push(copyModuleFileAs(fileMap.babelPolyfill, join(options.scripts.folder, 'polyfill.js')));
+      files.push(getFile(babelPolyfillPath, join(options.scripts.folder, 'polyfill.js')));
     }
     if (options.normalizeCss) {
-      files.push(copyModuleFileAs(fileMap.normalizeCss, join(options.styles.folder, 'normalize.css')));
+      files.push(getFile(normalizeCssPath, join(options.styles.folder, 'normalize.css')));
     }
 
     return Q.all(files);
