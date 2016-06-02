@@ -11,6 +11,7 @@ var Q = require('q');
 var mkdirp = Q.denodeify(require('mkdirp'));
 var readFile = Q.denodeify(fs.readFile);
 var writeFile = Q.denodeify(fs.writeFile);
+var readdir = Q.denodeify(fs.readdir);
 var babelPolyfillPath = require.resolve('babel-polyfill/dist/polyfill.js');
 var normalizeCssPath = require.resolve('normalize.css/normalize.css');
 
@@ -174,6 +175,7 @@ module.exports = function barnyard(projectDir, options) {
   }
 
   function outputFiles(files) {
+    // TODO: reject promise when `join` fails
     var outputFilesList = files.map(function(file) {
       var filePath = join(projectDir, file.path);
       return outputFile(filePath, file.data);
@@ -183,3 +185,37 @@ module.exports = function barnyard(projectDir, options) {
 
   return prepareFiles().then(outputFiles);
 };
+
+module.exports.preflight = function preflight(projectDir) {
+  function isDirEmpty(files) {
+    var noOfFiles = files.length;
+    if (files.length > 0) {
+      return {
+        empty: false,
+        exists: true,
+        files: noOfFiles
+      }
+    } else {
+      return {
+        empty: true,
+        exists: true,
+        files: noOfFiles
+      }
+    }
+  }
+
+  function dirDoesNotExist(err) {
+    if (err.code === 'ENOENT') {
+      return {
+        empty: true,
+        exists: false,
+        files: 0
+      };
+    } else {
+      return err;
+    }
+  }
+
+  return readdir(projectDir).then(isDirEmpty).catch(dirDoesNotExist);
+
+}

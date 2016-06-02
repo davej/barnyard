@@ -5,11 +5,13 @@ var expect = require('unexpected').clone();
 var barnyard = require('../');
 var Path = require('path');
 var rimraf = require('rimraf');
-var mkdirp = require('mkdirp');
+var _mkdirp = require('mkdirp');
 var walk = require('./helpers').walk;
 var Q = require('q');
 var fs = require('fs');
 var readFile = Q.denodeify(fs.readFile);
+var writeFile = Q.denodeify(fs.writeFile);
+var mkdirp = Q.denodeify(_mkdirp);
 
 describe('barnyard', () => {
   var tmpDir = Path.join(process.cwd(), 'tmp/');
@@ -17,7 +19,8 @@ describe('barnyard', () => {
   var stylesDir = Path.join(tmpDir, 'styles/');
 
   var makeRelative = (files) => files.map(file => file.replace(tmpDir, ''));
-  var clearTmpDir = (cb) => mkdirp(tmpDir, () => rimraf(tmpDir, cb));
+  var _clearTmpDir = (cb) => mkdirp(tmpDir).then(() => rimraf(tmpDir, cb));
+  var clearTmpDir = Q.denodeify(_clearTmpDir);
 
   after(clearTmpDir);
 
@@ -410,6 +413,55 @@ describe('barnyard', () => {
       });
     });
 
+  });
+
+  describe('preflight (not empty)', () => {
+    before(() =>
+      clearTmpDir().then(() =>
+        mkdirp(tmpDir).then(() =>
+          writeFile(Path.join(tmpDir, 'helloworld.txt'), 'Hello World!')
+        )
+      )
+    );
+
+    it('should warn that dir is not empty', () => {
+      var preflight = barnyard.preflight(tmpDir);
+      return expect(preflight, 'to be fulfilled with', {
+        empty: false,
+        exists: true,
+        files: 1
+      })
+    });
+  });
+
+  describe('preflight (empty)', () => {
+    before(() =>
+      clearTmpDir().then(() => mkdirp(tmpDir))
+    );
+
+    it('should say dir is empty', () => {
+      var preflight = barnyard.preflight(tmpDir);
+      return expect(preflight, 'to be fulfilled with', {
+        empty: true,
+        exists: true,
+        files: 0
+      })
+    });
+  });
+
+  describe('preflight (empty)', () => {
+    before(() =>
+      clearTmpDir()
+    );
+
+    it('should say dir doesn\'t exist', () => {
+      var preflight = barnyard.preflight(tmpDir);
+      return expect(preflight, 'to be fulfilled with', {
+        empty: true,
+        exists: false,
+        files: 0
+      })
+    });
   });
 
 });
