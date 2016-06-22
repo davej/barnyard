@@ -449,7 +449,7 @@ describe('barnyard', () => {
     });
   });
 
-  describe('preflight (empty)', () => {
+  describe('preflight (non-exist)', () => {
     before(() =>
       clearTmpDir()
     );

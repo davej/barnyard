@@ -20,6 +20,7 @@
   "homepage": "https://github.com/davej/barnyard#readme",
   "dependencies": {
     "babel-polyfill": "^6.3.14",
+    "checkdir": "^1.0.0",
     "deep-extend": "^0.4.1",
     "detab": "^1.0.2",
     "markup-js": "^1.5.21",
