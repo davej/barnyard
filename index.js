@@ -14,6 +14,7 @@ var readFile = Q.denodeify(fs.readFile);
 var writeFile = Q.denodeify(fs.writeFile);
 var babelPolyfillPath = require.resolve('babel-polyfill/dist/polyfill.js');
 var normalizeCssPath = require.resolve('normalize.css/normalize.css');
+var babelRCPath = require.resolve('./templates/.babelrc');
 
 var templatesDir = join(__dirname, 'templates');
 
@@ -63,7 +64,7 @@ var fileMap = {
     js: function(name, dir) {
       return join((dir || defaults.scripts.folder), (name || defaults.scripts.file) + '.js')
     },
-    babel: function(name, dir) {
+    'babel': function(name, dir) {
       return join((dir || defaults.scripts.folder), (name || defaults.scripts.file) + '.babel.js')
     },
     coffee: function(name, dir) {
@@ -156,6 +157,9 @@ module.exports = function barnyard(projectDir, options) {
     files.push(prepareHtml());
     files.push(prepareStyles());
     files.push(prepareScripts());
+    if (options.scripts.type === 'babel') {
+      files.push(getFile(babelRCPath, '.babelrc'));
+    }
     if (options.babelPolyfill) {
       files.push(getFile(babelPolyfillPath, join(options.scripts.folder, 'polyfill.js')));
     }

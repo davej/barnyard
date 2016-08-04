@@ -155,8 +155,8 @@ describe('barnyard', () => {
         return barn.then((files) =>
           expect(makeRelative(files),
             'to contain', 'index.html', 'scripts/main.babel.js', 'styles/main.css',
-            'scripts/polyfill.js', 'styles/normalize.css')
-            .and('to have length', 5)
+            'scripts/polyfill.js', 'styles/normalize.css', '.babelrc')
+            .and('to have length', 6)
         );
       });
 
@@ -200,8 +200,8 @@ describe('barnyard', () => {
         return barn.then((files) =>
           expect(makeRelative(files),
             'to contain', 'index.jade', 'scripts/main.babel.js', 'styles/main.css',
-            'scripts/polyfill.js', 'styles/normalize.css')
-            .and('to have length', 5)
+            'scripts/polyfill.js', 'styles/normalize.css', '.babelrc')
+            .and('to have length', 6)
         );
       });
 
@@ -215,13 +215,16 @@ describe('barnyard', () => {
       it('should have correct files', () => {
         var pFilePath = Path.join(scriptsDir, 'polyfill.js');
         var nFilePath = Path.join(stylesDir, 'normalize.css');
+        var bFilePath = Path.join(tmpDir, '.babelrc');
         var pFile = readFile(pFilePath, 'utf8');
         var nFile = readFile(nFilePath, 'utf8');
+        var bFile = readFile(bFilePath, 'utf8');
 
-        return Q.all([pFile, nFile]).then(
+        return Q.all([pFile, nFile, bFile]).then(
           files => {
             expect(files[0], 'to contain', 'babelPolyfill');
             expect(files[1], 'to contain', '/*! normalize.css');
+            expect(files[2], 'to contain', '"presets": ["es2015"]');
           }
         );
       });
