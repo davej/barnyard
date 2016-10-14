@@ -190,4 +190,6 @@ module.exports = function barnyard(projectDir, options) {
   return prepareFiles().then(outputFiles);
 };
 
-module.exports.preflight = checkdir;
+module.exports.preflight = function(filePath) {
+   return checkdir(filePath, { ignoreDotFiles: true });
+}
